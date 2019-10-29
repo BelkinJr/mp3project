@@ -5,20 +5,16 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.File;
-import java.io.IOException;
+
 
 public class player extends AppCompatActivity {
 
@@ -31,22 +27,8 @@ public class player extends AppCompatActivity {
     int songLength;
 
 
-
-    public void playSong(String path) {
-        MediaPlayer mp = new MediaPlayer();
-//        try {
-//            mp.setDataSource(path);
-//            mp.prepare();
-//            mp.start();
-//            mp.setLooping(true);
-//            mp.seekTo(0);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-
-    }
-
+    //change the button image depending on whether the song is playing or not
+    //(stop to play and play to stop)
     public void playBtnClick (View view) {
         if (!mp.isPlaying()) {
             mp.start();
@@ -56,6 +38,7 @@ public class player extends AppCompatActivity {
             playButn.setBackgroundResource(R.drawable.playbtn);
         }
     }
+
 
     private Handler handler = new Handler() {
         @Override
@@ -73,13 +56,14 @@ public class player extends AppCompatActivity {
         }
     };
 
-
+    //calculate time of the song
     public String createTimeLable (int time) {
         String timelabel = "";
         int min = time/1000/60;
         int sec = time/1000%60;
 
         timelabel = min + ":";
+        //if less than 10- the digit is on the right
         if (sec<10) timelabel += "0";
         timelabel += sec;
 
@@ -95,19 +79,17 @@ public class player extends AppCompatActivity {
         timeElapsed = (TextView) findViewById(R.id.elapsedTime);
         timeLeft = (TextView) findViewById(R.id.leftTime);
         songName = (TextView) findViewById(R.id.songName);
-        //get path of the image as a string
+        //get path of the song as a string
         String songPath = getIntent().getExtras().getString("path");
+        //get name of the song as a string
         String nameOfSong = getIntent().getExtras().getString("name");
 
         songName.setText(nameOfSong);
 
         mp = MediaPlayer.create(this, Uri.parse(songPath));
         mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        //mp.prepareAsync();
         mp.setLooping(true);
         mp.start();
-
-
 
 
         mp.setVolume(0.5f, 0.5f);
@@ -135,6 +117,8 @@ public class player extends AppCompatActivity {
 
                     }
                 });
+
+        //here the song progress is sent to the handler
         new Thread(new Runnable() {
             @Override
             public void run() {
